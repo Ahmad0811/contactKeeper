@@ -36,7 +36,7 @@ const ContactForm = () => {
     } else {
       setContact({ name: '', email: '', phone: '', type: 'personal' });
     }
-  }, [success, contactContext, current]);
+  }, [success, contactContext, current, error]);
 
   const [contact, setContact] = useState({
     name: '',
