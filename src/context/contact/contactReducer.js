@@ -8,7 +8,10 @@ import {
   FILTER_CONTACTS,
   CONTACT_ERROR,
   GET_CONTACTS,
-  CLEAR_CONTACTS
+  CLEAR_CONTACTS,
+  CONTACT_SUCCESS,
+  CLEAR_ERRORS,
+  CLEAR_SUCCESS
 } from '../types';
 
 export default (state, action) => {
@@ -39,7 +42,8 @@ export default (state, action) => {
         contacts: state.contacts.filter(
           (contact) => contact.id !== action.payload
         ),
-        loading: false
+        loading: false,
+        success: action.msg
       };
     case CLEAR_CONTACTS:
       return {
@@ -80,6 +84,21 @@ export default (state, action) => {
       return {
         ...state,
         error: action.payload
+      };
+    case CONTACT_SUCCESS:
+      return {
+        ...state,
+        success: action.payload
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null
+      };
+    case CLEAR_SUCCESS:
+      return {
+        ...state,
+        success: null
       };
 
     default:

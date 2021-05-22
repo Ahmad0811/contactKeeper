@@ -4,16 +4,17 @@ import contactContext from './contactContext';
 import contactReducer from './contactReducer';
 
 import {
-  ADD_CONTACT,
   CLEAR_CURRENT,
   CLEAR_FILTER,
   DELETE_CONTACT,
   SET_CURRENT,
-  UPDATE_CONTACT,
   FILTER_CONTACTS,
   CONTACT_ERROR,
   GET_CONTACTS,
-  CLEAR_CONTACTS
+  CLEAR_CONTACTS,
+  CONTACT_SUCCESS,
+  CLEAR_SUCCESS,
+  CLEAR_ERRORS
 } from '../types';
 
 const ContactState = (props) => {
@@ -22,7 +23,8 @@ const ContactState = (props) => {
     current: null,
     filtered: null,
     error: null,
-    loading: true
+    loading: true,
+    success: null
   };
 
   const [state, dispatch] = useReducer(contactReducer, initialState);
@@ -33,7 +35,7 @@ const ContactState = (props) => {
       const res = await axios.get('/all_contacts.php');
       dispatch({ type: GET_CONTACTS, payload: res.data });
     } catch (err) {
-      //   dispatch({ type: CONTACT_ERROR, payload: err });
+      dispatch({ type: CONTACT_ERROR, payload: err });
       console.log(err.message);
     }
   };
@@ -48,10 +50,12 @@ const ContactState = (props) => {
 
     try {
       const res = await axios.post('/create_contact.php', contact, config);
-      // dispatch({ type: ADD_CONTACT, payload: res.data });
+      dispatch({ type: CONTACT_SUCCESS, payload: res.data.msg });
+      // console.log(res.data.msg);
       getContacts();
     } catch (err) {
       dispatch({ type: CONTACT_ERROR, payload: err.response.data.msg });
+      // console.log(err.response.data.msg);
     }
   };
 
@@ -71,11 +75,10 @@ const ContactState = (props) => {
         { data: { id: id } },
         config
       );
-      // console.log(res);
-      dispatch({ type: DELETE_CONTACT, payload: id });
+
+      dispatch({ type: DELETE_CONTACT, payload: id, msg: res.data.msg });
     } catch (err) {
       dispatch({ type: CONTACT_ERROR, payload: err.response.data.msg });
-      // console.log(err.message);
     }
   };
 
@@ -89,7 +92,7 @@ const ContactState = (props) => {
 
     try {
       const res = await axios.put(`/update_contact.php`, contact, config);
-
+      dispatch({ type: CONTACT_SUCCESS, payload: res.data.msg });
       getContacts();
     } catch (err) {
       dispatch({ type: CONTACT_ERROR, payload: err.response.data.msg });
@@ -121,6 +124,16 @@ const ContactState = (props) => {
     dispatch({ type: CLEAR_FILTER });
   };
 
+  //Clear Errors
+  const clearErrors = () => {
+    dispatch({ type: CLEAR_ERRORS });
+  };
+
+  //Clear Success
+  const clearSuccess = () => {
+    dispatch({ type: CLEAR_SUCCESS });
+  };
+
   return (
     <contactContext.Provider
       value={{
@@ -129,6 +142,7 @@ const ContactState = (props) => {
         filtered: state.filtered,
         error: state.error,
         loading: state.loading,
+        success: state.success,
         addContact,
         deleteContact,
         setCurrent,
@@ -137,7 +151,9 @@ const ContactState = (props) => {
         filterContact,
         clearFilter,
         getContacts,
-        clearContacts
+        clearContacts,
+        clearErrors,
+        clearSuccess
       }}
     >
       {props.children}

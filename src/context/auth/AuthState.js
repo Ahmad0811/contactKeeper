@@ -30,7 +30,6 @@ const AuthState = (props) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   // Load User
-
   const loadUser = async () => {
     if (localStorage.token) {
       setAuthToken(localStorage.token);
@@ -45,17 +44,14 @@ const AuthState = (props) => {
 
     try {
       const res = await axios.get('/user_info.php', config);
-      // console.log(res);
 
       dispatch({ type: USER_LOADED, payload: res.data });
     } catch (err) {
-      console.log(err.message);
-      //   dispatch({ type: AUTH_ERROR, payload: err });
+      dispatch({ type: AUTH_ERROR, payload: err.response.data.msg });
     }
   };
 
   // Register User
-
   const register = async (formData) => {
     const config = {
       headers: {
@@ -67,7 +63,6 @@ const AuthState = (props) => {
 
     try {
       const res = await axios.post('/register.php', formData, config);
-      // console.log(res.body);
       dispatch({
         type: REGISTER_SUCCESS,
         payload: res.data
@@ -75,16 +70,14 @@ const AuthState = (props) => {
 
       loadUser();
     } catch (err) {
-      console.log(err.message);
-      // dispatch({
-      //   type: REGISTER_FAIL,
-      //   payload: err.response.data.msg
-      // });
+      dispatch({
+        type: REGISTER_FAIL,
+        payload: err.response.data.msg
+      });
     }
   };
 
   // Login User
-
   const login = async (formData) => {
     const config = {
       headers: {
@@ -96,7 +89,7 @@ const AuthState = (props) => {
 
     try {
       const res = await axios.post('/login.php', formData, config);
-      console.log(res);
+
       dispatch({
         type: LOGIN_SUCCESS,
         payload: res.data
@@ -104,11 +97,10 @@ const AuthState = (props) => {
 
       loadUser();
     } catch (err) {
-      //   dispatch({
-      //     type: LOGIN_FAIL,
-      //     payload: err.response.data.msg
-      //   });
-      console.log(err);
+      dispatch({
+        type: LOGIN_FAIL,
+        payload: err.response.data.msg
+      });
     }
   };
 
@@ -118,7 +110,6 @@ const AuthState = (props) => {
   };
 
   //Clear Errors
-
   const clearErrors = () => {
     dispatch({ type: CLEAR_ERRORS });
   };
